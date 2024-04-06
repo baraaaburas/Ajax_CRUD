@@ -1,0 +1,211 @@
+﻿@model Ajax.Models.Employee 
+
+@{
+    ViewData["Title"] = "Employees List";
+}
+
+
+
+
+<h3>@ViewData["Title"]</h3>
+<hr />
+<div>
+    <button class="btn btn-success mb-2" id="btnAdd" style="margin-left:10px">Add Employee</button>
+</div>
+<div class="Search">
+    <input type="text" id="searchInput"placeholder="Search by name..."/>
+    
+</div>
+<div class="container">
+    <table id="employeeTable" class="table table-borderless table-striped table-responsive">
+        <thead>
+            <tr class="bg-info">
+                <th class="bg-primary" style="color:snow">No</th>
+                <th class="bg-primary" style="color:snow">Name</th>
+                <th class="bg-primary" style="color:snow">Department</th>
+                <th class="bg-primary" style="color:snow">Position</th>
+                <th class="bg-primary" style="color:snow">Manager</th>
+                <th class="bg-primary" style="color:snow">Action</th>
+            </tr>
+        </thead>
+        <tbody id="tblBody">
+
+        </tbody>
+    </table>
+</div>
+
+
+<div class="modal" id="EmployeeModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle"></h3>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" asp-for="Id" value="0" />
+                <div class="mb-2">
+
+                    <label asp-for="Name"></label>
+                    <input type="text" asp-for="Name" class="form-control" placeholder="Employee Name" />
+                </div>
+                <div class="mb-2">
+                    <label asp-for="Department"></label>
+                    <select id="DepartmentSelect" class="form-control">
+                        <option value="">Select an option</option>
+                        @foreach (var option in ViewBag.Departments)
+                        {
+                            <option value="@option.Id">@option.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label asp-for="Position"></label>
+                    <select id="PositionSelect" class="form-control">
+                        <option value="">Select an option</option>
+                        @foreach (var option in ViewBag.Positions)
+                        {
+                            <option value="@option.Id">@option.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label asp-for="Level"></label>
+                    <input type="number" asp-for="Level" class="form-control" placeholder="Employee Level" />
+                </div> <div class="mb-2">
+                    <label asp-for="Manager"></label>
+                    <select id="ManagersSelect" class="form-control">
+                        <option value="">Select an option</option>
+                        @foreach (var option in ViewBag.Managers)
+                        {
+                            <option value="@option.Id">@option.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="Save" type="submit" onclick="Insert();">
+                    Save
+                </button>
+                <button class="btn btn-primary" id="Update" type="submit" onclick="Edit();" style="display:none">
+                    Update
+                </button>
+                <button id="hide" class="btn btn-danger" data-bs-dissmiss="modal">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="modal" id="EmployeeEdit">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" >Edit Employee</h3>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="EditId" value="0" />
+                <div class="mb-2">
+
+                    <label asp-for="Name"></label>
+                    <input type="text" id="EditName" class="form-control" placeholder="Employee Name" />
+                </div>
+                <div class="mb-2">
+                    <label asp-for="Department"></label>
+                    <select id="DepartmentSelectEdit" class="form-control">
+                        <option value="">Select an option</option>
+                        @foreach (var option in ViewBag.Departments)
+                        {
+                            <option value="@option.Id">@option.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label asp-for="Position"></label>
+                    <select id="PositionSelectEdit" class="form-control">
+                        <option value="">Select an option</option>
+                        @foreach (var option in ViewBag.Positions)
+                        {
+                            <option value="@option.Id">@option.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label asp-for="Level"></label>
+                    <input type="number" id="EditLevel" class="form-control" placeholder="Employee Level" />
+                </div> <div class="mb-2">
+                    <label asp-for="Manager"></label>
+                    <select id="ManagersSelectEdit" class="form-control">
+                        <option value="">Select an option</option>
+                        @foreach (var option in ViewBag.Managers)
+                        {
+                            <option value="@option.Id">@option.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <button class="btn btn-primary" id="Update" type="submit" onclick="Update();">
+                    Update
+                </button>
+                <button id="EditHide" class="btn btn-danger" data-bs-dissmiss="modal" >
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+@*<div id="addModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Employee</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addForm">
+                    <div class="form-group">
+                        <label for="Name">Name:</label>
+                        <input type="text" id="addName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="Department">Department:</label>
+                        <input type="number" id="addDepartment" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="Position">Position:</label>
+                        <input type="number" id="addPosition" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="Manager">Manager:</label>
+                        <input type="number" id="addManager" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="Level">Level:</label>
+                        <input type="number" id="addLevel" class="form-control">
+                    </div>
+                    
+                    <br />
+                    <button id="addData" type="submit" class="btn btn-primary ">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+
+
+
+                           
